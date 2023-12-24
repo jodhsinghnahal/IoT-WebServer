@@ -9,15 +9,19 @@ database = 'sensordata.db'
 def run(command, value):
     db = sqlite3.connect(database)
     line = db.cursor()
-    all = line.execute(command, value).fetchall()
+    line.execute(command, value).fetchall()
     db.commit()
     db.close()
+    db2 = sqlite3.connect(database)
+    f = db2.cursor()
+    all = f.execute("SELECT * FROM data").fetchall()
+    db2.close()
     return all
 
 @app.route("/")
 def main():
     ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
-    time.sleep(3)
+    time.sleep(1)
     ser.reset_input_buffer()
     print("SERIAL OK")
 
@@ -26,5 +30,5 @@ def main():
         if ser.in_waiting > 0:
             line = int(ser.readline().decode('utf-8').rstrip())
             all=run("INSERT INTO data VALUES (?)", (line,))
-            render_template("index.html", data=all)
-            print(line)
+            print(all)
+            return render_template("index.html", data=all)
