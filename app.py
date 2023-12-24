@@ -25,6 +25,6 @@ def main():
         time.sleep(0.01)
         if ser.in_waiting > 0:
             line = int(ser.readline().decode('utf-8').rstrip())
-            all=run("INSERT INTO data VALUE (?)", (line,))
+            all=run("INSERT INTO data VALUES (?)", (line,))
             render_template("index.html", data=all)
             print(line)
